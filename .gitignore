@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+workerEnv/
+*.env
+.env
+
+# Node.js (for your API Gateway if you have a local node_modules)
+node_modules/
+dist/
+*.log
+
+# Data
+# IMPORTANT: You do not want to upload 6 GB of data to Git!
+sdss_benchmark_dataset/
+fetched_data/
+saved_tensors/
+visualization.png
+
+# IDE / Editor specific
+.vscode/
+.idea/
