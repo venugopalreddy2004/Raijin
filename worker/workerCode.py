@@ -13,7 +13,7 @@ import os
 from urllib.parse import urlparse 
 
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.environ.get("REDIS_PORT")) 
+REDIS_PORT = int(os.environ.get("REDIS_PORT","6379")) 
 MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT","localhost:9000")
 MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY","minioadmin")
 MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY","minioadmin")
@@ -26,13 +26,14 @@ MAX_RETRIES = int((os.environ.get("MAX_RETRIES", "3"))
 
 # MAIN OBJECTIVES
 # 1. create an connect to redis client (+)
-# 2. try fetching work from queue if failed again push in queue ()
+# 2. try fetching work from queue if failed again push in queue (+)
 # 3. fetch fits img from minio bucket (+)
 # 4. preprocess the data (+)
 # 5. add to the other minio bucket (+)
 
 # ------------------------------HELPER FUNCTIONS--------------------------------
 
+# create a client to connect to minio storage 
 def createS3_client():
     try:
         s3_client = boto3.client(
@@ -47,7 +48,7 @@ def createS3_client():
         print(f"Error creating S3 client: {e}", file=sys.stderr)
         return None
 
-
+# fetching the required file from minio bucket and store locally in /tmp
 def fetchFile(s3_client, s3_address, local_path):
     try:
         parsed_url = urlparse(s3_address)
@@ -79,10 +80,11 @@ def fetchFile(s3_client, s3_address, local_path):
         return False
     
 # bucket_name -> common bucket hoga, objectLocation ->userId/jobId
+# preprocessed tensor in uploaded to user-data bucket for being pulled by the sdk
 def uploadTensor(s3_client, tensorFileLocation, bucket_name, objectLocation):
     s3_client.upload_file(tensorFileLocation,bucket_name,objectLocation)
     
-
+# preprocessing the data for training
 def preprocessData(input_local_path, output_local_path):
     # LOADING THE DATA
     #input_local_path = "frame-g-001000-1-0027.fits"
