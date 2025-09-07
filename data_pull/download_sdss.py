@@ -1,15 +1,15 @@
 import os
-import requests
-from bs4 import BeautifulSoup
+import requests # type: ignore
+from bs4 import BeautifulSoup # type: ignore
 import pandas as pd
-from tqdm import tqdm
+from tqdm import tqdm # type: ignore
 import bz2
 import time
 
 
 TARGET_FILE_COUNT = 500
 DOWNLOAD_DIRECTORY = "sdss_benchmark_dataset"
-S3_BUCKET_PREFIX = "s3://endurance/sdss_benchmark_dataset"
+S3_BUCKET_PREFIX = "s3://dataset/sdss_benchmark_dataset"
 BASE_URL = "https://data.sdss.org/sas/dr17/eboss/photoObj/frames/301/"
 
 

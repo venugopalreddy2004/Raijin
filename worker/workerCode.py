@@ -12,14 +12,16 @@ import sys
 import os
 from urllib.parse import urlparse 
 
+REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.environ.get("REDIS_PORT")) 
 MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT","localhost:9000")
 MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY","minioadmin")
 MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY","minioadmin")
 WORK_QUEUE_NAME = os.environ.get("WORK_QUEUE_NAME","workQueue")
 DLQ_NAME =  os.environ.get("DLQ_NAME","dead_letter_queue")
 PROCESSED_DATA_BUCKET = os.environ.get("PROCESSED_DATA_BUCKET","user-data")
-MAX_RETRIES = 3
-
+MAX_RETRIES = int((os.environ.get("MAX_RETRIES", "3")) 
+)
 
 
 # MAIN OBJECTIVES
@@ -117,7 +119,7 @@ def main():
     # try connnecting to redis 
     print("Connecting to redis...")
     try:
-        redis_conn = Redis(decode_responses=True)
+        redis_conn = Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
         redis_conn.ping()
     except redis.exceptions.ConnectionError as e:
         print("Failed connecting to redis queue")
@@ -152,7 +154,7 @@ def main():
             if job_info_string:
                 redis_conn.lpush(DLQ_NAME,job_info_string)
         
-        # these error are worker side errors so push back the job in workQueue
+        # these error are worker side errors so try to push back the job in workQueue
         except Exception as e:
                 try:
                     # Try to parse the json to add the counter
