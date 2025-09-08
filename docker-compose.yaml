@@ -1,0 +1,83 @@
+version: '3.8'
+
+volumes:
+  minio-data: 
+  redis-data: 
+services:
+  primary-server:
+    build:
+      context: ./primary_server
+      dockerfile: Dockerfile   
+    environment:
+      - REDIS_HOST=my-redis
+      - REDIS_PORT=6379
+    ports:
+      - 8081:8081
+    depends_on:
+      - "my-redis"
+      - "my-minio"
+  
+  unit-worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=my-redis
+      - REDIS_PORT=6379
+      - MINIO_ENDPOINT=my-minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - WORK_QUEUE_NAME=workQueue
+      - DLQ_NAME=dead_letter_queue
+      - PROCESSED_DATA_BUCKET=user-data
+      - MAX_RETRIES=3
+    depends_on:
+      - "initialize-minio"
+    deploy:
+      replicas: 4
+  
+  my-redis:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+
+  my-minio:
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  initialize-minio:
+    image: minio/mc
+    depends_on:
+      my-minio:
+        condition: service_healthy
+    volumes:
+      - ./data_pull:/seed-data   
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        mc alias set myminio http://my-minio:9000 minioadmin minioadmin
+        mc mb myminio/dataset --ignore-existing
+        mc mb myminio/user-data --ignore-existing
+        mc cp --recursive /seed-data/sdss_benchmark_dataset myminio/dataset/
+
+
+
+
+
+
