@@ -11,16 +11,19 @@ from botocore.exceptions import ClientError
 import sys
 import os
 from urllib.parse import urlparse 
+from dotenv import load_dotenv
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
-REDIS_PORT = int(os.environ.get("REDIS_PORT","6379")) 
-MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT","localhost:9000")
-MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY","minioadmin")
-MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY","minioadmin")
-WORK_QUEUE_NAME = os.environ.get("WORK_QUEUE_NAME","workQueue")
-DLQ_NAME =  os.environ.get("DLQ_NAME","dead_letter_queue")
-PROCESSED_DATA_BUCKET = os.environ.get("PROCESSED_DATA_BUCKET","user-data")
-MAX_RETRIES = int((os.environ.get("MAX_RETRIES", "3")) 
+load_dotenv()
+
+REDIS_HOST = os.environ.get("REDIS_HOST")
+REDIS_PORT = int(os.environ.get("REDIS_PORT")) 
+MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT")
+MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY")
+WORK_QUEUE_NAME = os.environ.get("WORK_QUEUE_NAME")
+DLQ_NAME =  os.environ.get("DLQ_NAME")
+PROCESSED_DATA_BUCKET = os.environ.get("PROCESSED_DATA_BUCKET")
+MAX_RETRIES = int((os.environ.get("MAX_RETRIES")) 
 )
 
 

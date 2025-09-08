@@ -5,7 +5,14 @@ import redis = require("redis");
 const app = express();
 app.use(express.json())
 
-const client = redis.createClient();
+const redis_host = process.env.REDIS_HOST || 'localhost';
+const redis_port = process.env.REDIS_PORT || 6379;
+
+const client = redis.createClient({
+    url: `redis://${redis_host}:${redis_port}`
+});
+
+client.on('error', (err) => console.error('Redis Client Error:', err));
 client.connect();
 
 
@@ -31,4 +38,6 @@ app.post('/submit',async (req,res)=>{
 
 })
 
-app.listen(8081);
+app.listen(8081, ()=>{
+    console.log("Server is listen at port 8081")
+});
