@@ -1,0 +1,6 @@
+torch
+numpy
+redis
+boto3
+astropy
+python-dotenv
