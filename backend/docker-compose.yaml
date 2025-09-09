@@ -11,6 +11,8 @@ services:
     environment:
       - REDIS_HOST=my-redis
       - REDIS_PORT=6379
+      - MASTER_API_KEY=super-secret-key-42
+      - HASHING_SALT=b1a2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2
     ports:
       - 8081:8081
     depends_on:
