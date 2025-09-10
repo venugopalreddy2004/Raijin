@@ -15,6 +15,8 @@ This project solves this problem by engineering a distributed, asynchronous back
 
 Raijin is a **polyglot microservices application** built on the asynchronous **Producer/Consumer pattern**. The entire backend infrastructure is containerized and defined in a single Docker Compose file for easy, reproducible deployment.
 
+![Architecture Diagram](./architecture.png)
+
 
 ### Core Components:
 
