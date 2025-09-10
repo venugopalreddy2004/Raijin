@@ -1,7 +1,5 @@
 # Project Raijin: A Distributed Data Processing Pipeline
 
-# Project Raijin: A Distributed Data Processing Pipeline
-
 Raijin is a distributed system that accelerates machine learning workflows by solving a critical bottleneck: **GPU idle time caused by slow data preprocessing**.  
 Instead of letting expensive GPUs sit idle while waiting for data, Raijin **preprocesses data asynchronously in parallel workers** and delivers it through a PyTorch-compatible SDK.
 
